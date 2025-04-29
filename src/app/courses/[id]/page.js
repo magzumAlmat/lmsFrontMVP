@@ -166,7 +166,8 @@ const VideoPlayer = ({ material }) => {
 
 const getUpdatedFilePath = (filePath) => {
   console.log("getUpdatedFilePath started", filePath);
-  return filePath.replace(":4000", "");
+  // return filePath.replace(":4000", "");
+  return filePath
 };
 
 export default function CourseDetail() {
@@ -324,6 +325,7 @@ export default function CourseDetail() {
   }, [userInfo, id, token]);
 
   const filteredLessons = lessons.filter((lesson) => lesson.course_id === Number(id));
+  
   const filteredMaterials = materials.filter((material) => material.lesson_id === filteredLessons[activeTab]?.id);
   const videoMaterials = filteredMaterials.filter((material) => material.type === "video");
 
@@ -614,7 +616,7 @@ export default function CourseDetail() {
                     >
                       <ListItemText
                         primary={material.title}
-                        secondary={`Тип: ${material.type}`}
+                        // secondary={`Тип: ${material.type}`}
                         primaryTypographyProps={{
                           color: theme.palette.text.primary,
                           fontSize: { xs: "0.75rem", sm: "0.875rem" },

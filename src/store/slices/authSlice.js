@@ -726,7 +726,7 @@ export const useTokenInitialization = (dispatch) => {
 
 
 export const createUserAction = ({email, password} ) => async (dispatch) => {
-  console.log('1 createUser запустился ', email, password);
+  console.log('1 createUser запустился ', email, password,'host = ',host);
   dispatch({ type: 'REGISTER_USER_REQUEST' }); // Запрос начат
 
   try {

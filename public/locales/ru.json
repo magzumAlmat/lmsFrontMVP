@@ -1,7 +1,7 @@
 
 {
     "Layout": {
-      "title": "Kazniisa LMS",
+      "title": "LMS",
       "welcome": "Привет, {name}",
       "home": "Главная",
       "addRole": "Добавить роль",

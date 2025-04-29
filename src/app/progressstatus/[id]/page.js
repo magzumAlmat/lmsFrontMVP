@@ -332,7 +332,8 @@ export default function ProgressDetail() {
               disabled={!isProgressSufficient()}
             />
           }
-          label="Пройден ли тест на сайте Building Smart?"
+          // label="Пройден ли тест на сайте Building Smart?"
+          label="Выдан ли сертификат ?"
         />
         <br />
         <Button
