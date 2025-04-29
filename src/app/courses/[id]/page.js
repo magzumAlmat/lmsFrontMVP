@@ -761,46 +761,46 @@ export default function CourseDetail() {
 
 
           {/* <Box sx={{ flexGrow: 1, p: { xs: 0, sm: 1 }, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}> */}
-          <Box sx={{ flexGrow: 1, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
-            <Paper elevation={3} sx={{ p: { xs: 2, sm: 2.5 }, bgcolor: theme.palette.background.paper, width: "100%", maxWidth: "100%", overflow: "hidden" }}>
-              <LinearProgress
-                variant="determinate"
-                value={(getCompletedLessonsCount() / filteredLessons.length) * 100 || 0}
-                sx={{ mb: 1.5 }}
-              />
-              <Typography variant="subtitle1" sx={{ color: theme.palette.text.secondary, fontSize: { xs: "0.625rem", sm: "0.75rem" }, mb: 1.5 }}>
-                Пройдено {getCompletedLessonsCount()} из {filteredLessons.length} уроков
-              </Typography>
+          <Box sx={{ flexGrow: 5, width: "100%", maxWidth: "100%", boxSizing: "border-box", mr: { xs: 0, sm: 3 } }}>
+  <Paper elevation={3} sx={{ p: { xs: 2, sm: 5.5 }, bgcolor: theme.palette.background.paper, width: "90%", maxWidth: "100%", overflow: "hidden" }}>
+    <LinearProgress
+      variant="determinate"
+      value={(getCompletedLessonsCount() / filteredLessons.length) * 100 || 0}
+      sx={{ mb: 1.5 }}
+    />
+    <Typography variant="subtitle1" sx={{ color: theme.palette.text.secondary, fontSize: { xs: "0.625rem", sm: "0.75rem" }, mb: 1.5 }}>
+      Пройдено {getCompletedLessonsCount()} из {filteredLessons.length} уроков
+    </Typography>
 
-              <Typography variant="h6" sx={{ color: theme.palette.text.primary, fontSize: { xs: "1rem", sm: "1.25rem" }, mb: 1.5 }}>
-                {filteredLessons[activeTab].title}
-              </Typography>
+    <Typography variant="h6" sx={{ color: theme.palette.text.primary, fontSize: { xs: "1rem", sm: "1.25rem" }, mb: 1.5 }}>
+      {filteredLessons[activeTab].title}
+    </Typography>
 
-              {filteredLessons[activeTab].image && (
-                <Box
-                  component="img"
-                  src={filteredLessons[activeTab].image}
-                  alt={`Lesson ${activeTab + 1}`}
-                  sx={{ width: "100%", maxWidth: "100%", height: "auto", maxHeight: { xs: "200px", sm: "300px" }, objectFit: "cover", borderRadius: "8px", mb: 1.5 }}
-                />
-              )}
+    {filteredLessons[activeTab].image && (
+      <Box
+        component="img"
+        src={filteredLessons[activeTab].image}
+        alt={`Lesson ${activeTab + 1}`}
+        sx={{ width: "100%", maxWidth: "100%", height: "auto", maxHeight: { xs: "200px", sm: "300px" }, objectFit: "cover", borderRadius: "8px", mb: 1.5 }}
+      />
+    )}
 
-              {/* Рендеринг блоков в порядке приоритета */}
-              {contentBlocks.map((block) => block.component)}
+    {/* Рендеринг блоков в порядке приоритета */}
+    {contentBlocks.map((block) => block.component)}
 
-              <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "flex-end", gap: 1.5, mt: 2 }}>
-                <Button
-                  variant="contained"
-                  color={isLessonCompleted(filteredLessons[activeTab]?.id) ? "success" : "primary"}
-                  onClick={() => handleCompleteLesson(filteredLessons[activeTab]?.id)}
-                  disabled={isLessonCompleted(filteredLessons[activeTab]?.id)}
-                  sx={{ width: { xs: "100%", sm: "180px" }, py: 1, fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
-                >
-                  {isLessonCompleted(filteredLessons[activeTab]?.id) ? "Урок завершен" : "Завершить урок"}
-                </Button>
-              </Box>
-            </Paper>
-          </Box>
+    <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "flex-end", gap: 1.5, mt: 2 }}>
+      <Button
+        variant="contained"
+        color={isLessonCompleted(filteredLessons[activeTab]?.id) ? "success" : "primary"}
+        onClick={() => handleCompleteLesson(filteredLessons[activeTab]?.id)}
+        disabled={isLessonCompleted(filteredLessons[activeTab]?.id)}
+        sx={{ width: { xs: "100%", sm: "180px" }, py: 1, fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+      >
+        {isLessonCompleted(filteredLessons[activeTab]?.id) ? "Урок завершен" : "Завершить урок"}
+      </Button>
+    </Box>
+  </Paper>
+</Box>
         </Box>
       </Box>
     </ThemeProvider>
