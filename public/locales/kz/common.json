@@ -1,0 +1,65 @@
+{
+  "title": "КазНИИСА LMS",
+  "welcome": "Платформаға қош келдіңіз",
+  "topMenu": {
+    "home": "Басты бет",
+    "addRole": "Рөл қосу",
+    "profile": "Профиль",
+    "logout": "Шығу",
+    "streams": "Ағымдар",
+    "courses": "Курстар",
+    "lessons": "Сабақтар",
+    "materials": "Материалдар",
+    "progress": "Прогресс",
+    "notAuth": "Авторизацияланбаған",
+     "documentLibrary":"Библиотека документов"
+  },
+  "courses": {
+    "title": "Қолжетімді курстар",
+    "noCourses": "Қолжетімді курстар жоқ.",
+    "error": "Қате: {{message}}",
+    "loading": "Курстар жүктелуде...",
+    "progress": "Прогресс: {{value}}%",
+    "descriptionPlaceholder": "Сипаттама жоқ.",
+    "goToCourse": "Курсқа өту"
+  },
+  "courseDetail": {
+    "loading": "Жүктелуде...",
+    "noLessons": "Қолжетімді сабақтар жоқ.",
+    "noContent": "Көрсетуге арналған мазмұн жоқ.",
+    "videoUnavailable": "Видео қолжетімсіз.",
+    "videoNotSupported": "Сіздің браузеріңіз видеоны ойнатуды қолдамайды.",
+    "noVideos": "Қолжетімді видеолар жоқ.",
+    "noMaterials": "Қолжетімді материалдар жоқ.",
+    "materialsTitle": "Қосымша материалдар:",
+    "videosTitle": "Видео материалдар:",
+    "completeLesson": "Сабақты аяқтау",
+    "lessonCompleted": "Сабақ аяқталды",
+    "goToTest": "Тестке өту",
+    "download": "Жүктеу",
+    "type": "Түрі: {{type}}",
+    "progressText": "{{total}} сабақтың {{completed}}-ы аяқталды",
+    "contentError": "Қате: {{message}}",
+    "lessonCompletedAlert": "Сабақ аяқталды"
+  },
+  "profile": {
+    "title": "Менің профилім",
+    "name": "Аты",
+    "lastname": "Тегі",
+    "phone": "Телефон",
+    "areasofactivity": "Қызмет саласы",
+    "save": "Сақтау",
+    "select_area": "Саланы таңдаңыз",
+    "activity_options": {
+      "construction_management": "Құрылыс жобаларын басқару",
+      "design": "Жобалау",
+      "expertise": "Сараптама және сәйкестікті бағалау",
+      "construction_work": "Құрылыс жұмыстарын өндіру",
+      "control": "Бақылау және қадағалау",
+      "development": "Девелопмент және жылжымайтын мүлік"
+    },
+    "success": "Профиль сәтті жаңартылды",
+    "error": "Профильді жаңарту кезінде қате пайда болды: {{message}}",
+    "network_error": "Серверге қосылу мүмкін болмады"
+  }
+}

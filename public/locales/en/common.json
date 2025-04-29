@@ -1,0 +1,65 @@
+{
+  "title": "KazNIIZA LMS",
+  "welcome": "Welcome to the platform",
+  "topMenu": {
+    "home": "Home",
+    "addRole": "Add Role",
+    "profile": "Profile",
+    "logout": "Logout",
+    "streams": "Streams",
+    "courses": "Courses",
+    "lessons": "Lessons",
+    "materials": "Materials",
+    "progress": "Progress",
+    "notAuth": "Not Authorized",
+     "documentLibrary":"Библиотека документов"
+  },
+  "courses": {
+    "title": "Available Courses",
+    "noCourses": "No courses available.",
+    "error": "Error: {{message}}",
+    "loading": "Loading courses...",
+    "progress": "Progress: {{value}}%",
+    "descriptionPlaceholder": "Description is missing.",
+    "goToCourse": "Go to Course"
+  },
+  "courseDetail": {
+    "loading": "Loading...",
+    "noLessons": "No lessons available.",
+    "noContent": "No content available to display.",
+    "videoUnavailable": "Video unavailable.",
+    "videoNotSupported": "Your browser does not support video playback.",
+    "noVideos": "No videos available.",
+    "noMaterials": "No materials available.",
+    "materialsTitle": "Additional Materials:",
+    "videosTitle": "Video Materials:",
+    "completeLesson": "Complete Lesson",
+    "lessonCompleted": "Lesson Completed",
+    "goToTest": "Go to Test",
+    "download": "Download",
+    "type": "Type: {{type}}",
+    "progressText": "Completed {{completed}} of {{total}} lessons",
+    "contentError": "Error: {{message}}",
+    "lessonCompletedAlert": "Lesson completed"
+  },
+  "profile": {
+    "title": "My Profile",
+    "name": "Name",
+    "lastname": "Last Name",
+    "phone": "Phone",
+    "areasofactivity": "Area of Activity",
+    "save": "Save",
+    "select_area": "Select an area",
+    "activity_options": {
+      "construction_management": "Construction Project Management",
+      "design": "Design",
+      "expertise": "Expertise and Compliance Assessment",
+      "construction_work": "Construction Work Production",
+      "control": "Control and Supervision",
+      "development": "Development and Real Estate"
+    },
+    "success": "Profile successfully updated",
+    "error": "An error occurred while updating the profile: {{message}}",
+    "network_error": "Failed to connect to the server"
+  }
+}

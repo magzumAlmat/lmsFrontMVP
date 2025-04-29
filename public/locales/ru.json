@@ -1,0 +1,18 @@
+
+{
+    "Layout": {
+      "title": "Kazniisa LMS",
+      "welcome": "Привет, {name}",
+      "home": "Главная",
+      "addRole": "Добавить роль",
+      "profile": "Профиль",
+      "adminPanel": "Админ-панель",
+      "logout": "Выйти",
+      "streams": "Потоки",
+      "courses": "Курсы",
+      "subjects": "Предметы",
+      "materials": "Материалы",
+      "progress": "Прогресс",
+      "footer": "© 2025 Учебная платформа. Все права защищены."
+    }
+  }

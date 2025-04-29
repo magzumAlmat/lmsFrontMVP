@@ -1,0 +1,133 @@
+ input, a, li, ul, textarea, span, p, h1, h2, h3, ol, aside, main{
+    box-sizing: border-box;
+    font-family: 'Open Sans';
+}
+@font-face {
+    font-family: 'Open Sans';
+    src: url('/fonts/OpenSans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  body {
+    font-family: 'Open Sans', sans-serif;
+    margin: 0;
+  }
+
+.flexColumn{
+    display: flex;
+    flex-direction: column;
+}
+ul li{
+    padding: 10px;
+}
+a{
+    text-decoration: none;
+}
+
+ul li a{
+    color: black;
+    text-decoration: none;
+}
+.formRegister{
+    margin: 10px 0 0 0;
+    background-color: white;
+    height: 400px;
+
+}
+.loginForm{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loginForm button{
+    margin: 0 0 0px 0px;
+}
+
+.FlexContainer {
+    position: absolute;
+    width: 100%;
+    align-items: center;
+}
+
+
+.card{
+    padding-right: 10%;
+    display: block;
+    margin: 0 auto;
+    padding-left: 10%;
+    padding-top: 10%;
+    padding-bottom: 8%;
+}
+.clearStyle{
+    display: inline-table;
+    margin: 0 auto;
+}
+
+.padding10px{
+    padding-left: 2%;
+    padding-right: 2%;
+}
+.card div{
+    /* margin: 21px 40px 53px 44px; */
+    padding-right: 1%;
+    display: block;
+    margin: 0 auto;
+}
+.card div form{
+    padding-left: 1rem;
+}
+.container{
+    width: 100%;
+    max-width: 1250px;
+    padding: 0 20px;
+    display: block;
+    margin: 0 auto;
+}
+
+.header{
+    background-color: yellow;
+}
+
+
+
+.editorjs-container .codex__editor {
+    max-width: 100% !important; /* Убираем ограничение max-width */
+    width: 100%; /* Растягиваем на всю ширину контейнера */
+
+  }
+  
+  .editorjs-container .ce-block__content {
+    max-width: none !important; /* Убираем ограничение для содержимого блоков */
+    /* max-width: none ; */
+  }
+  
+  .editorjs-container {
+    width: 100%; /* Убедимся, что контейнер занимает всю ширину */
+  }
+
+
+  .ce-block__content{
+    /* background-color: yellow!important; */
+    max-width: none!important;
+
+  }
+
+.codex-editor__redactor{
+    padding-bottom: 0px!important;
+}
+
+/* #review-editor-container{ right: 130%! important;} */
+.review{right: 130%! important;}
+  /* .ce-toolbar__actions{
+    right: 111%;
+    
+  } */
+
+  .ce-toolbar__content {
+    max-width: none;
+    margin: 0 auto;
+    position: relative;
+}
+  

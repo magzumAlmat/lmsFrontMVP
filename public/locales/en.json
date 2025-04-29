@@ -1,0 +1,16 @@
+{
+  "title": "KazNIIZA LMS",
+  "welcome": "Welcome to the platform",
+  "menu": {
+    "home": "Home",
+    "addRole": "Add Role",
+    "profile": "Profile",
+    "logout": "Logout",
+    "streams": "Streams",
+    "courses": "Courses",
+    "lessons": "Lessons",
+    "materials": "Materials",
+    "progress": "Progress",
+    "notAuth": "Not Authorized"
+  }
+}

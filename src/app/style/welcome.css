@@ -1,0 +1,23 @@
+/* styles/Home.module.css */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Полная высота экрана */
+    padding: 20px;
+    background-color: #f5f5f5; /* Цвет фона */
+    font-weight: 500;
+  }
+  
+  .text {
+    text-align: justify; /* Выравнивание текста по ширине */
+    color: #ffffff; /* Белый цвет текста */
+    font-family: sans-serif; /* Шрифт */
+    line-height: 1.6; /* Межстрочный интервал */
+    max-width: 800px; /* Максимальная ширина текста */
+    margin: 0 auto; /* Центрирование текста */
+    background-color: rgba(0, 0, 0, 0.7); /* Полупрозрачный фон для текста */
+    padding: 20px; /* Внутренние отступы */
+    border-radius: 8px; /* Скругление углов */
+    font-weight: bold;
+  }

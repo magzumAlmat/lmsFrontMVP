@@ -1,0 +1,16 @@
+ const existingPost = state.allPosts.find(post => post.id === action.payload.id);
+            if (!existingPost) {
+              state.allPosts.push(action.payload);
+            } else {
+              // Обновляем существующий пост, если он уже существует
+              Object.assign(existingPost, action.payload);
+            }
+
+
+
+
+               if(allPosts){
+      allPosts.map((item,index)=>{
+        item.map((item2)=>{console.log('likes',   item2.likes)
+        arrayofLikes.push(item.likes)
+      })
