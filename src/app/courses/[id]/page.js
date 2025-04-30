@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -18,12 +17,16 @@ import {
   LinearProgress,
   useMediaQuery,
   CircularProgress,
+  TextField,
+  InputLabel,
+  Alert,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { getAllCoursesAction, logoutAction } from "../../../store/slices/authSlice";
 import TopMenu from "../../../components/topmenu";
 import DOMPurify from "dompurify";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Divider from "@mui/material/Divider";
 
 // Динамический импорт Editor.js и инструментов
 const EditorJS = dynamic(() => import("@editorjs/editorjs").then((mod) => mod.default), { ssr: false });
@@ -146,11 +149,11 @@ const theme = createTheme({
 });
 
 const VideoPlayer = ({ material }) => {
-  console.log("Materials from player ", material);
   if (!material || !material.file_path) {
     return <Typography sx={{ color: theme.palette.text.secondary, fontSize: { xs: "0.75rem", sm: "0.875rem" } }}>Видео недоступно.</Typography>;
   }
   const updatedFilePath = material.file_path;
+
   return (
     <Box sx={{ width: "50%", maxWidth: "100%", overflow: "hidden" }}>
       <Typography variant="h6" sx={{ color: theme.palette.text.primary, fontSize: { xs: "1rem", sm: "1.125rem" }, mb: 1 }}>
@@ -165,9 +168,7 @@ const VideoPlayer = ({ material }) => {
 };
 
 const getUpdatedFilePath = (filePath) => {
-  console.log("getUpdatedFilePath started", filePath);
-  // return filePath.replace(":4000", "");
-  return filePath
+  return filePath;
 };
 
 export default function CourseDetail() {
@@ -190,6 +191,18 @@ export default function CourseDetail() {
   );
   const editorInstance = useRef(null);
   const isMobile = useMediaQuery("(max-width: 600px)");
+  // Состояния для домашнего задания
+  const [homeworkText, setHomeworkText] = useState("");
+  const [homeworkFiles, setHomeworkFiles] = useState([]);
+  const [isSubmittingHomework, setIsSubmittingHomework] = useState(false);
+  const [homeworkError, setHomeworkError] = useState(null);
+  const [homeworkSuccess, setHomeworkSuccess] = useState(false);
+  const [existingHomeworks, setExistingHomeworks] = useState([]);
+
+  // Определяем filteredLessons до useEffect
+  const filteredLessons = useMemo(() => {
+    return lessons.filter((lesson) => lesson.course_id === Number(id));
+  }, [lessons, id]);
 
   useEffect(() => {
     const storedToken = typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -206,13 +219,30 @@ export default function CourseDetail() {
     }
   }, [token, dispatch]);
 
-  // Загрузка конфигурации приоритетов
+  const fetchHomeworks = async (userId, lessonId) => {
+    try {
+      const response = await axios.get(`http://localhost:4000/api/homeworks/user/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const lessonHomeworks = response.data.filter((hw) => hw.lesson_id === lessonId);
+      setExistingHomeworks(lessonHomeworks);
+    } catch (error) {
+      console.error("Ошибка при загрузке домашних заданий:", error);
+      setHomeworkError("Не удалось загрузить существующие домашние задания");
+    }
+  };
+
+  useEffect(() => {
+    if (userInfo && filteredLessons[activeTab]?.id) {
+      fetchHomeworks(userInfo.id, filteredLessons[activeTab].id);
+    }
+  }, [userInfo, activeTab, filteredLessons]);
+
   const fetchPriorityConfig = async () => {
     try {
       const response = await axios.get(`${host}/api/lessons/${id}/priority`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Ответ от сервера (приоритеты):", response.data);
       setPriorityConfig(response.data.priority_config);
     } catch (error) {
       console.error("Ошибка при загрузке приоритетов:", error);
@@ -220,11 +250,10 @@ export default function CourseDetail() {
     }
   };
 
-  // Инициализация Editor.js для уроков с отзывами
   useEffect(() => {
     if (!token || !lessons.length) return;
 
-    const currentLesson = lessons.filter((lesson) => lesson.course_id === Number(id))[activeTab];
+    const currentLesson = filteredLessons[activeTab];
     if (!currentLesson?.isReviewLesson) return;
 
     const initEditor = async () => {
@@ -271,14 +300,14 @@ export default function CourseDetail() {
         editorInstance.current.destroy();
       }
     };
-  }, [token, activeTab, lessons, id, reviewContent]);
+  }, [token, activeTab, filteredLessons, reviewContent]);
 
   const fetchLessons = async () => {
     try {
       const response = await axios.get(`${host}/api/lessons`, { headers: { Authorization: `Bearer ${token}` } });
       const sortedLessons = response.data.sort((a, b) => a.id - b.id);
       setLessons(sortedLessons);
-      await fetchPriorityConfig(); // Загружаем приоритеты после получения уроков
+      await fetchPriorityConfig();
     } catch (error) {
       console.error("Ошибка при загрузке уроков:", error);
       setLessons([]);
@@ -291,7 +320,6 @@ export default function CourseDetail() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMaterials(response.data);
-      console.log("Вывод= ", response.data);
     } catch (error) {
       console.error("Ошибка при загрузке материалов:", error);
     }
@@ -324,10 +352,13 @@ export default function CourseDetail() {
     if (userInfo && token) fetchAllProgresses(userInfo.id, id);
   }, [userInfo, id, token]);
 
-  const filteredLessons = lessons.filter((lesson) => lesson.course_id === Number(id));
-  
-  const filteredMaterials = materials.filter((material) => material.lesson_id === filteredLessons[activeTab]?.id);
-  const videoMaterials = filteredMaterials.filter((material) => material.type === "video");
+  const filteredMaterials = useMemo(() => {
+    return materials.filter((material) => material.lesson_id === filteredLessons[activeTab]?.id);
+  }, [materials, filteredLessons, activeTab]);
+
+  const videoMaterials = useMemo(() => {
+    return filteredMaterials.filter((material) => material.type === "video");
+  }, [filteredMaterials]);
 
   const renderLessonContent = () => {
     const currentLesson = filteredLessons[activeTab];
@@ -385,7 +416,6 @@ export default function CourseDetail() {
     }
     try {
       const rawContent = JSON.parse(currentLesson.content);
-      console.log(rawContent);
       const blocks = rawContent.blocks;
       if (!blocks || !Array.isArray(blocks)) {
         throw new Error("Некорректный формат данных: отсутствует массив blocks");
@@ -516,7 +546,13 @@ export default function CourseDetail() {
     }
   };
 
-  const handleChangeTab = (event, newValue) => setActiveTab(newValue);
+  const handleChangeTab = (event, newValue) => {
+    setActiveTab(newValue);
+    setHomeworkText("");
+    setHomeworkFiles([]);
+    setHomeworkError(null);
+    setHomeworkSuccess(false);
+  };
 
   const isLessonCompleted = (lessonId) => {
     const progress = progresses.find((p) => p.lesson_id === lessonId);
@@ -550,21 +586,211 @@ export default function CourseDetail() {
 
   const getCompletedLessonsCount = () => progresses.filter((p) => p.status === "completed").length;
 
-  // Формирование массива блоков с приоритетами
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    const validFiles = files.filter((file) => file.type === "application/pdf" && file.size <= 10 * 1024 * 1024);
+    if (validFiles.length < files.length) {
+      setHomeworkError("Выберите только PDF-файлы размером до 10MB");
+    }
+    setHomeworkFiles(validFiles);
+  };
+
+  const handleHomeworkSubmit = async (e) => {
+    e.preventDefault();
+    if (!homeworkText.trim()) {
+      setHomeworkError("Текст домашнего задания обязателен");
+      return;
+    }
+
+    setIsSubmittingHomework(true);
+    setHomeworkError(null);
+    setHomeworkSuccess(false);
+
+    try {
+      const decoded = jwtDecode(token);
+
+      const homeworkResponse = await axios.post(
+        "http://localhost:4000/api/homeworks",
+        {
+          user_id: decoded.id,
+          lesson_id: filteredLessons[activeTab].id,
+          description: homeworkText,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (homeworkResponse.status !== 201) {
+        throw new Error("Ошибка при создании домашнего задания");
+      }
+
+      const homeworkId = homeworkResponse.data.homework_id;
+
+      if (homeworkFiles.length > 0) {
+        const formData = new FormData();
+        homeworkFiles.forEach((file) => formData.append("files", file));
+
+        const fileResponse = await axios.post(
+          `http://localhost:4000/api/homeworks/${homeworkId}/files`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        if (fileResponse.status !== 201) {
+          throw new Error("Ошибка при загрузке файлов");
+        }
+      }
+
+      setHomeworkSuccess(true);
+      setHomeworkText("");
+      setHomeworkFiles([]);
+      fetchHomeworks(decoded.id, filteredLessons[activeTab].id);
+      alert("Домашнее задание успешно отправлено!");
+    } catch (error) {
+      console.error("Ошибка при отправке домашнего задания:", error);
+      setHomeworkError(error.response?.data?.message || "Ошибка при отправке домашнего задания");
+    } finally {
+      setIsSubmittingHomework(false);
+    }
+  };
+
+  const renderHomeworkForm = () => {
+    if (filteredLessons[activeTab]?.isReviewLesson || isLessonCompleted(filteredLessons[activeTab]?.id)) {
+      return null;
+    }
+
+    const currentLessonHomeworks = existingHomeworks.filter((hw) => hw.status !== "graded");
+
+    return (
+      <Box sx={{ mt: 3, width: "100%", maxWidth: "100%", overflow: "hidden" }}>
+        <Typography variant="h6" sx={{ color: theme.palette.text.primary, mb: 1.5 }}>
+          Домашнее задание
+        </Typography>
+
+        {currentLessonHomeworks.length > 0 && (
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="subtitle1" sx={{ color: theme.palette.text.primary, mb: 1 }}>
+              Отправленные задания:
+            </Typography>
+            <MuiList>
+              {currentLessonHomeworks.map((hw) => (
+                <ListItem key={hw.homework_id} sx={{ flexDirection: "column", alignItems: "flex-start", py: 1 }}>
+                  <ListItemText
+                    primary={`Описание: ${hw.description}`}
+                    secondary={`Статус: ${hw.status}${hw.submitted_at ? `, Отправлено: ${new Date(hw.submitted_at).toLocaleString()}` : ""}`}
+                    primaryTypographyProps={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                    secondaryTypographyProps={{ fontSize: { xs: "0.625rem", sm: "0.75rem" } }}
+                  />
+                  {hw.files?.length > 0 && (
+                    <Box sx={{ mt: 1 }}>
+                      <Typography sx={{ fontSize: { xs: "0.625rem", sm: "0.75rem" }, color: theme.palette.text.secondary }}>
+                        Файлы:
+                      </Typography>
+                      {hw.files.map((file) => (
+                        <Button
+                          key={file.id}
+                          href={file.path}
+                          download={file.name}
+                          variant="text"
+                          size="small"
+                          sx={{ fontSize: { xs: "0.625rem", sm: "0.75rem" }, ml: 1 }}
+                        >
+                          {file.name}
+                        </Button>
+                      ))}
+                    </Box>
+                  )}
+                </ListItem>
+              ))}
+            </MuiList>
+          </Box>
+        )}
+
+        <form onSubmit={handleHomeworkSubmit}>
+          <TextField
+            label="Текст домашнего задания"
+            multiline
+            rows={4}
+            value={homeworkText}
+            onChange={(e) => setHomeworkText(e.target.value)}
+            fullWidth
+            required
+            sx={{ mb: 2 }}
+            disabled={isSubmittingHomework}
+          />
+          <InputLabel sx={{ mb: 1, color: theme.palette.text.primary, fontSize: { xs: "0.75rem", sm: "0.875rem" } }}>
+            Прикрепить PDF-файлы (до 10MB каждый, опционально)
+          </InputLabel>
+          <input
+            type="file"
+            accept="application/pdf"
+            multiple
+            onChange={handleFileChange}
+            disabled={isSubmittingHomework}
+            style={{ marginBottom: "16px" }}
+          />
+          {homeworkFiles.length > 0 && (
+            <Box sx={{ mb: 1 }}>
+              <Typography sx={{ color: theme.palette.text.secondary, fontSize: { xs: "0.625rem", sm: "0.75rem" } }}>
+                Выбрано файлов: {homeworkFiles.length}
+              </Typography>
+              <MuiList dense>
+                {homeworkFiles.map((file, index) => (
+                  <ListItem key={index}>
+                    <ListItemText
+                      primary={file.name}
+                      secondary={`${(file.size / 1024 / 1024).toFixed(2)} MB`}
+                      primaryTypographyProps={{ fontSize: { xs: "0.625rem", sm: "0.875rem" } }}
+                      secondaryTypographyProps={{ fontSize: { xs: "0.5rem", sm: "0.625rem" } }}
+                    />
+                  </ListItem>
+                ))}
+              </MuiList>
+            </Box>
+          )}
+          {homeworkError && (
+            <Alert severity="error" sx={{ mb: 1, fontSize: { xs: "0.625rem", sm: "0.75rem" } }}>
+              {homeworkError}
+            </Alert>
+          )}
+          {homeworkSuccess && (
+            <Alert severity="success" sx={{ mb: 1, fontSize: { xs: "0.625rem", sm: "0.75rem" } }}>
+              Домашнее задание успешно отправлено!
+            </Alert>
+          )}
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={isSubmittingHomework}
+            sx={{ width: { xs: "100%", sm: "180px" }, py: 1 }}
+            startIcon={isSubmittingHomework && <CircularProgress size={16} />}
+          >
+            Отправить домашнее задание
+          </Button>
+        </form>
+      </Box>
+    );
+  };
+
   const contentBlocks = useMemo(() => {
-    const blocks = [];
+    const blocks = [
+      {
+        priority: priorityConfig.EditorJS,
+        component: (
+          <Box sx={{ mb: 2, width: "100%", maxWidth: "100%", overflow: "hidden" }} key="editorjs">
+            {renderLessonContent()}
+          </Box>
+        ),
+      },
+    ];
 
-    // Блок EditorJS (основной контент урока или отзыв)
-    blocks.push({
-      priority: priorityConfig.EditorJS,
-      component: (
-        <Box sx={{ mb: 2, width: "100%", maxWidth: "100%", overflow: "hidden" }} key="editorjs">
-          {renderLessonContent()}
-        </Box>
-      ),
-    });
-
-    // Блок видео-материалов (только для не-обзорных уроков)
     if (!filteredLessons[activeTab]?.isReviewLesson) {
       blocks.push({
         priority: priorityConfig.Video,
@@ -587,10 +813,6 @@ export default function CourseDetail() {
           </Box>
         ),
       });
-    }
-
-    // Блок дополнительных материалов (только для не-обзорных уроков)
-    if (!filteredLessons[activeTab]?.isReviewLesson) {
       blocks.push({
         priority: priorityConfig.AdditionalMaterials,
         component: (
@@ -602,8 +824,6 @@ export default function CourseDetail() {
               <MuiList sx={{ p: 0 }}>
                 {filteredMaterials.map((material) => {
                   const updatedFilePath = material.file_path ? getUpdatedFilePath(material.file_path) : null;
-                  console.log("updatedFilePath for material", material.material_id, ":", updatedFilePath);
-
                   return (
                     <ListItem
                       key={material.material_id}
@@ -616,7 +836,6 @@ export default function CourseDetail() {
                     >
                       <ListItemText
                         primary={material.title}
-                        // secondary={`Тип: ${material.type}`}
                         primaryTypographyProps={{
                           color: theme.palette.text.primary,
                           fontSize: { xs: "0.75rem", sm: "0.875rem" },
@@ -682,11 +901,14 @@ export default function CourseDetail() {
           </Box>
         ),
       });
+      blocks.push({
+        priority: priorityConfig.AdditionalMaterials + 1,
+        component: renderHomeworkForm(),
+      });
     }
 
-    // Сортировка блоков по приоритету
-    return blocks.sort((a, b) => a.priority - b.priority);
-  }, [priorityConfig, filteredLessons, activeTab, renderLessonContent, videoMaterials, filteredMaterials, theme, userInfo, isSubmittingReview]);
+    return blocks.sort((a, b) => a.priority - b.priority).filter((block) => block.component);
+  }, [priorityConfig, filteredLessons, activeTab, renderLessonContent, videoMaterials, filteredMaterials, theme, userInfo, isSubmittingReview, existingHomeworks, homeworkText, homeworkFiles, homeworkError, homeworkSuccess, isSubmittingHomework]);
 
   if (!token) {
     return (
@@ -761,48 +983,45 @@ export default function CourseDetail() {
             ))}
           </Tabs>
 
-
-          {/* <Box sx={{ flexGrow: 1, p: { xs: 0, sm: 1 }, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}> */}
           <Box sx={{ flexGrow: 5, width: "100%", maxWidth: "100%", boxSizing: "border-box", mr: { xs: 0, sm: 3 } }}>
-  <Paper elevation={3} sx={{ p: { xs: 2, sm: 5.5 }, bgcolor: theme.palette.background.paper, width: "90%", maxWidth: "100%", overflow: "hidden" }}>
-    <LinearProgress
-      variant="determinate"
-      value={(getCompletedLessonsCount() / filteredLessons.length) * 100 || 0}
-      sx={{ mb: 1.5 }}
-    />
-    <Typography variant="subtitle1" sx={{ color: theme.palette.text.secondary, fontSize: { xs: "0.625rem", sm: "0.75rem" }, mb: 1.5 }}>
-      Пройдено {getCompletedLessonsCount()} из {filteredLessons.length} уроков
-    </Typography>
+            <Paper elevation={3} sx={{ p: { xs: 2, sm: 5.5 }, bgcolor: theme.palette.background.paper, width: "90%", maxWidth: "100%", overflow: "hidden" }}>
+              <LinearProgress
+                variant="determinate"
+                value={(getCompletedLessonsCount() / filteredLessons.length) * 100 || 0}
+                sx={{ mb: 1.5 }}
+              />
+              <Typography variant="subtitle1" sx={{ color: theme.palette.text.secondary, fontSize: { xs: "0.625rem", sm: "0.75rem" }, mb: 1.5 }}>
+                Пройдено {getCompletedLessonsCount()} из {filteredLessons.length} уроков
+              </Typography>
 
-    <Typography variant="h6" sx={{ color: theme.palette.text.primary, fontSize: { xs: "1rem", sm: "1.25rem" }, mb: 1.5 }}>
-      {filteredLessons[activeTab].title}
-    </Typography>
+              <Typography variant="h6" sx={{ color: theme.palette.text.primary, fontSize: { xs: "1rem", sm: "1.25rem" }, mb: 1.5 }}>
+                {filteredLessons[activeTab].title}
+              </Typography>
 
-    {filteredLessons[activeTab].image && (
-      <Box
-        component="img"
-        src={filteredLessons[activeTab].image}
-        alt={`Lesson ${activeTab + 1}`}
-        sx={{ width: "100%", maxWidth: "100%", height: "auto", maxHeight: { xs: "200px", sm: "300px" }, objectFit: "cover", borderRadius: "8px", mb: 1.5 }}
-      />
-    )}
+              {filteredLessons[activeTab].image && (
+                <Box
+                  component="img"
+                  src={filteredLessons[activeTab].image}
+                  alt={`Lesson ${activeTab + 1}`}
+                  sx={{ width: "100%", maxWidth: "100%", height: "auto", maxHeight: { xs: "200px", sm: "300px" }, objectFit: "cover", borderRadius: "8px", mb: 1.5 }}
+                />
+              )}
 
-    {/* Рендеринг блоков в порядке приоритета */}
-    {contentBlocks.map((block) => block.component)}
+              {contentBlocks.map((block) => block.component)}
 
-    <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "flex-end", gap: 1.5, mt: 2 }}>
-      <Button
-        variant="contained"
-        color={isLessonCompleted(filteredLessons[activeTab]?.id) ? "success" : "primary"}
-        onClick={() => handleCompleteLesson(filteredLessons[activeTab]?.id)}
-        disabled={isLessonCompleted(filteredLessons[activeTab]?.id)}
-        sx={{ width: { xs: "100%", sm: "180px" }, py: 1, fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
-      >
-        {isLessonCompleted(filteredLessons[activeTab]?.id) ? "Урок завершен" : "Завершить урок"}
-      </Button>
-    </Box>
-  </Paper>
-</Box>
+              <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "flex-end", gap: 1.5, mt: 2 }}>
+                <Button
+                  variant="contained"
+                  color={isLessonCompleted(filteredLessons[activeTab]?.id) ? "success" : "primary"}
+                  onClick={() => handleCompleteLesson(filteredLessons[activeTab]?.id)}
+                  disabled={isLessonCompleted(filteredLessons[activeTab]?.id)}
+                  sx={{ width: { xs: "100%", sm: "180px" }, py: 1, fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                >
+                  {isLessonCompleted(filteredLessons[activeTab]?.id) ? "Урок завершен" : "Завершить урок"}
+                </Button>
+              </Box>
+            </Paper>
+          </Box>
         </Box>
       </Box>
     </ThemeProvider>
