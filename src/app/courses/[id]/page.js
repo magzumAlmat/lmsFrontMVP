@@ -660,6 +660,21 @@ export default function CourseDetail() {
     }
   };
 
+  const handleFileDownload = async (file) => {
+    try {
+      const response = await fetch(`${host}/uploads/${file.name}`);
+      if (!response.ok) {
+        throw new Error('File not found');
+      }
+      setHomeworkError(null);
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      setHomeworkError('Не удалось скачать файл: ' + error.message);
+    }
+  };
+
+  
+
   const renderHomeworkForm = () => {
     if (filteredLessons[activeTab]?.isReviewLesson || isLessonCompleted(filteredLessons[activeTab]?.id)) {
       return null;
@@ -693,17 +708,18 @@ export default function CourseDetail() {
                         Файлы:
                       </Typography>
                       {hw.files.map((file) => (
-                        <Button
-                          key={file.id}
-                          href={file.path}
-                          download={file.name}
-                          variant="text"
-                          size="small"
-                          sx={{ fontSize: { xs: "0.625rem", sm: "0.75rem" }, ml: 1 }}
-                        >
-                          {file.name}
-                        </Button>
-                      ))}
+  <Button
+    key={file.id}
+    onClick={() => handleFileDownload(file)}
+    href={`${host}/uploads/${file.name}`}
+    download={file.name}
+    variant="text"
+    size="small"
+    sx={{ fontSize: { xs: "0.625rem", sm: "0.75rem" }, ml: 1 }}
+  >
+    {file.name}
+  </Button>
+))}
                     </Box>
                   )}
                 </ListItem>
