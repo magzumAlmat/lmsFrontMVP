@@ -863,33 +863,93 @@ export const loginInspectorAction = (email,password) => async(dispatch) => {
   });
 };
 
-export const loginAction = ({ email, password }) => async (dispatch) => {
-  console.log('1 login Action started host- ',host)
-  try {
-    const response = await axios.post(`${host}/api/auth/login`, {
-      email,
-      password,
-    });
+// export const loginAction = ({ email, password }) => async (dispatch) => {
+//   console.log('1 login Action started host- ',host)
+//   try {
+//     const response = await axios.post(`${host}/api/auth/login`, {
+//       email,
+//       password,
+//     });
 
-    const token = response.data.token;
+//     const token = response.data.token;
 
-    // Save the token to localStorage
-    localStorage.setItem("token", token);
+//     // Save the token to localStorage
+//     localStorage.setItem("token", token);
 
-    // Update Redux state
+//     // Update Redux state
     
 
-    if (typeof window !== "undefined") {
-      localStorage.setItem("token", token); // Set token only in the browser
-    }
+//     if (typeof window !== "undefined") {
+//       localStorage.setItem("token", token); // Set token only in the browser
+//     }
 
+//     await dispatch(loginReducer({ token }));
+//   } catch (error) {
+//     console.error("Login failed:", error);
+//   }
+// };
+
+export const loginAction = ({ email, password }) => async (dispatch) => {
+  console.log('loginAction started, END_POINT:', END_POINT);
+  try {
+    // Функция нормализации User-Agent
+    const normalizeUserAgent = (userAgent) => {
+      if (!userAgent) return 'Unknown User-Agent';
+      
+      let normalized = userAgent
+        .replace(/Chrome\/[\d.]+/, 'Chrome')
+        .replace(/Firefox\/[\d.]+/, 'Firefox')
+        .replace(/Safari\/[\d.]+/, 'Safari')
+        .replace(/Edge\/[\d.]+/, 'Edge')
+        .replace(/AppleWebKit\/[\d.]+/, 'AppleWebKit')
+        .replace(/Gecko\/[\d.]+/, 'Gecko')
+        .replace(/\s+/g, ' ')
+        .trim();
+      
+      return normalized;
+    };
+
+    // Нормализуем User-Agent
+    const rawUserAgent = navigator.userAgent;
+    const normalizedUserAgent = normalizeUserAgent(rawUserAgent);
+    console.log('Raw User-Agent:', rawUserAgent);
+    console.log('Normalized User-Agent:', normalizedUserAgent);
+
+    // Отправляем запрос на вход
+    const response = await axios.post(
+      `${END_POINT}/api/auth/login`,
+      { email, password },
+      {
+        headers: {
+          'User-Agent': normalizedUserAgent, // Отправляем нормализованный User-Agent
+        },
+      }
+    );
+
+    // Получаем токен и deviceId из ответа
+    const { token, deviceId } = response.data;
+    console.log('Получен deviceId:', deviceId);
+
+    // Сохраняем токен в localStorage
+    localStorage.setItem('token', token);
+    console.log('Токен сохранен в localStorage:', token);
+
+    // Обновляем состояние Redux
     await dispatch(loginReducer({ token }));
+    console.log('Состояние Redux обновлено');
+
+    return { token, deviceId };
   } catch (error) {
-    console.error("Login failed:", error);
+    // Логируем ошибку
+    console.error('Ошибка входа:', error.response?.data || error.message);
+    const errorMessage = error.response?.data?.message || 'Ошибка входа. Проверьте данные и попробуйте снова.';
+    console.log('Ошибка deviceId:', error.response?.data?.deviceId);
+
+    // Уведомляем пользователя об ошибке
+    dispatch(setError(errorMessage));
+    throw error;
   }
 };
-
-
 
 
 
@@ -1262,12 +1322,182 @@ export const addProgressAction = (userId,course) => async (dispatch) => {
     
 
     
-export const logoutAction = () => (dispatch) => {
-  // console.log('logoutAction started/');
+// export const logoutAction = () => (dispatch) => {
+//   // console.log('logoutAction started/');
 
-  dispatch(logout());
+//   dispatch(logout());
+// };
+
+// export const logoutAction = () => async (dispatch) => {
+//   try {
+//     console.log('logoutAction started');
+//     const token = localStorage.getItem('token');
+//     if (!token) {
+//       console.log('No token found in localStorage');
+//       await dispatch(logout());
+//       return;
+//     }
+
+//     // Проверяем, не истёк ли токен
+//     try {
+//       const decoded = jwtDecode(token);
+//       if (decoded.exp * 1000 < Date.now()) {
+//         console.log('Token expired, clearing state');
+//         await dispatch(logout());
+//         return;
+//       }
+//     } catch (e) {
+//       console.error('Invalid token format:', e);
+//       await dispatch(logout());
+//       return;
+//     }
+
+//     console.log('Sending logout request with token:', token);
+//     console.log('Backend URL:', process.env.REACT_APP_BACKEND_URL);
+
+//     const response = await axios.post(
+//       `${process.env.REACT_APP_BACKEND_URL}/api/auth/logout`,
+//       {},
+//       {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//           'User-Agent': navigator.userAgent,
+//         },
+//       }
+//     );
+
+//     console.log('Logout request successful:', unfortunate);
+//     dispatch(logout());
+//   } catch (error) {
+//     console.error('Logout error:', error.response?.data || error.message);
+//     console.error('Error status:', error.response?.status);
+//     console.error('Error headers:', error.response?.headers);
+//     dispatch(logout()); // Очищаем состояние даже при ошибке
+//     // Показываем уведомление пользователю
+//     alert('Ошибка при выходе: ' + (error.response?.data?.message || 'Попробуйте снова'));
+//   }
+// };
+
+
+// export const logoutAction = () => async (dispatch) => {
+  
+//   const token = localStorage.getItem('token');
+//   console.log('logoutAction started',token);
+
+
+
+//   if (!token) {
+//     console.log('No token found in localStorage');
+//     dispatch(logout()); // Clear state if no token exists
+//     return;
+//   }
+
+//   try {
+//     // Validate token expiration
+//     const decoded = jwt_decode(token);
+//     if (decoded.exp * 1000 < Date.now()) {
+//       console.log('Token expired, clearing state');
+//       dispatch(logout());
+//       return;
+//     }
+
+//     console.log('Sending logout request with token:', token);
+//     const response = await axios.post(
+//       `${host}/api/auth/logout`, // Use END_POINT consistent with other actions
+//       {},
+//       {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//           'User-Agent': navigator.userAgent, // Ensure User-Agent is sent
+//         },
+//       }
+//     );
+
+//     console.log('Logout request successful:', response.data);
+//     dispatch(logout()); // Clear state only on successful logout
+//   } catch (error) {
+//     console.error('Logout error:', error.response?.data || error.message);
+//     console.error('Error status:', error.response?.status);
+//     console.error('Error headers:', error.response?.headers);
+
+//     // Optionally, don't clear state on error to keep frontend/backend in sync
+//     // Instead, notify the user of the failure
+//     dispatch(setError(error.response?.data?.message || 'Ошибка при выходе. Попробуйте снова.'));
+//   }
+// };
+
+const normalizeUserAgent = (userAgent) => {
+  if (!userAgent) return 'Unknown User-Agent';
+  
+  let normalized = userAgent
+    .replace(/Chrome\/[\d.]+/, 'Chrome')
+    .replace(/Firefox\/[\d.]+/, 'Firefox')
+    .replace(/Safari\/[\d.]+/, 'Safari')
+    .replace(/Edge\/[\d.]+/, 'Edge')
+    .replace(/AppleWebKit\/[\d.]+/, 'AppleWebKit')
+    .replace(/Gecko\/[\d.]+/, 'Gecko')
+    .replace(/\s+/g, ' ')
+    .trim();
+  
+  return normalized;
 };
 
+export const logoutAction = () => async (dispatch) => {
+  // Логируем начало действия выхода
+  console.log('logoutAction started');
 
+  // Получаем токен из localStorage
+  const token = localStorage.getItem('token');
+  if (!token) {
+    console.log('Токен не найден в localStorage');
+    dispatch(logout());
+    localStorage.removeItem('token');
+    return;
+  }
+
+  try {
+    // Проверяем, не истек ли токен
+    const decoded = jwtDecode(token);
+    if (decoded.exp * 1000 < Date.now()) {
+      console.log('Токен истек, очищаем состояние');
+      dispatch(logout());
+      localStorage.removeItem('token');
+      return;
+    }
+
+    // Нормализуем User-Agent
+    const rawUserAgent = navigator.userAgent;
+    const normalizedUserAgent = normalizeUserAgent(rawUserAgent);
+    console.log('Raw User-Agent:', rawUserAgent);
+    console.log('Normalized User-Agent:', normalizedUserAgent);
+
+    // Отправляем запрос на выход
+    console.log('Отправляем запрос на выход с токеном:', token);
+    const response = await axios.post(
+      `${END_POINT}/api/auth/logout`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'User-Agent': normalizedUserAgent, // Отправляем нормализованный User-Agent
+        },
+      }
+    );
+
+    console.log('Запрос на выход успешен:', response.data);
+    dispatch(logout());
+    localStorage.removeItem('token');
+  } catch (error) {
+    // Логируем ошибку
+    console.error('Ошибка выхода:', error.response?.data || error.message);
+    console.error('Статус ошибки:', error.response?.status);
+    console.error('Заголовки ошибки:', error.response?.headers);
+
+    // Очищаем состояние и localStorage даже при ошибке
+    dispatch(logout());
+    localStorage.removeItem('token');
+    dispatch(setError(error.response?.data?.message || 'Ошибка при выходе. Попробуйте снова.'));
+  }
+};
 
 export default authSlice.reducer;

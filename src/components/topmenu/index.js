@@ -82,6 +82,24 @@ const theme = createTheme({
   },
 });
 
+const handleLogout = async () => {
+  try {
+    await axios.post(
+      `${host}/api/auth/logout`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    dispatch(logoutAction());
+    localStorage.removeItem("token");
+    router.push("/login");
+  } catch (error) {
+    console.error('Ошибка при логауте:', error);
+    dispatch(logoutAction());
+    localStorage.removeItem("token");
+    router.push("/login");
+  }
+};
+
 const TopMenu = ({ userInfo, handleLogout }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { t, ready } = useTranslation();
