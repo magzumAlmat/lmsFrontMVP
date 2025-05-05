@@ -28,7 +28,6 @@ import DOMPurify from "dompurify";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Divider from "@mui/material/Divider";
 
-// Динамический импорт Editor.js и инструментов
 const EditorJS = dynamic(() => import("@editorjs/editorjs").then((mod) => mod.default), { ssr: false });
 const Header = dynamic(() => import("@editorjs/header").then((mod) => mod.default), { ssr: false });
 const List = dynamic(() => import("@editorjs/list").then((mod) => mod.default), { ssr: false });
@@ -191,7 +190,6 @@ export default function CourseDetail() {
   );
   const editorInstance = useRef(null);
   const isMobile = useMediaQuery("(max-width: 600px)");
-  // Состояния для домашнего задания
   const [homeworkText, setHomeworkText] = useState("");
   const [homeworkFiles, setHomeworkFiles] = useState([]);
   const [isSubmittingHomework, setIsSubmittingHomework] = useState(false);
@@ -199,7 +197,6 @@ export default function CourseDetail() {
   const [homeworkSuccess, setHomeworkSuccess] = useState(false);
   const [existingHomeworks, setExistingHomeworks] = useState([]);
 
-  // Определяем filteredLessons до useEffect
   const filteredLessons = useMemo(() => {
     return lessons.filter((lesson) => lesson.course_id === Number(id));
   }, [lessons, id]);
@@ -673,8 +670,6 @@ export default function CourseDetail() {
     }
   };
 
-  
-
   const renderHomeworkForm = () => {
     if (filteredLessons[activeTab]?.isReviewLesson || isLessonCompleted(filteredLessons[activeTab]?.id)) {
       return null;
@@ -690,7 +685,7 @@ export default function CourseDetail() {
 
         {currentLessonHomeworks.length > 0 && (
           <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle1" sx={{ color: theme.palette.text.primary, mb: 1 }}>
+            <Typography variant="subtitle1" sx={{ shade: theme.palette.text.primary, mb: 1 }}>
               Отправленные задания:
             </Typography>
             <MuiList>
@@ -704,22 +699,22 @@ export default function CourseDetail() {
                   />
                   {hw.files?.length > 0 && (
                     <Box sx={{ mt: 1 }}>
-                      <Typography sx={{ fontSize: { xs: "0.625rem", sm: "0.75rem" }, color: theme.palette.text.secondary }}>
+                      <Typography sx={{ fontSize: { xs: "0.625rem", sm: "0.75rem" }, shade: theme.palette.text.secondary }}>
                         Файлы:
                       </Typography>
                       {hw.files.map((file) => (
-  <Button
-    key={file.id}
-    onClick={() => handleFileDownload(file)}
-    href={`${host}/uploads/${file.name}`}
-    download={file.name}
-    variant="text"
-    size="small"
-    sx={{ fontSize: { xs: "0.625rem", sm: "0.75rem" }, ml: 1 }}
-  >
-    {file.name}
-  </Button>
-))}
+                        <Button
+                          key={file.id}
+                          onClick={() => handleFileDownload(file)}
+                          href={`${host}/uploads/${file.name}`}
+                          download={file.name}
+                          variant="text"
+                          size="small"
+                          sx={{ fontSize: { xs: "0.625rem", sm: "0.75rem" }, ml: 1 }}
+                        >
+                          {file.name}
+                        </Button>
+                      ))}
                     </Box>
                   )}
                 </ListItem>
@@ -740,7 +735,7 @@ export default function CourseDetail() {
             sx={{ mb: 2 }}
             disabled={isSubmittingHomework}
           />
-          <InputLabel sx={{ mb: 1, color: theme.palette.text.primary, fontSize: { xs: "0.75rem", sm: "0.875rem" } }}>
+          <InputLabel sx={{ mb: 1, shade: theme.palette.text.primary, fontSize: { xs: "0.75rem", sm: "0.875rem" } }}>
             Прикрепить PDF-файлы (до 10MB каждый, опционально)
           </InputLabel>
           <input
@@ -753,7 +748,7 @@ export default function CourseDetail() {
           />
           {homeworkFiles.length > 0 && (
             <Box sx={{ mb: 1 }}>
-              <Typography sx={{ color: theme.palette.text.secondary, fontSize: { xs: "0.625rem", sm: "0.75rem" } }}>
+              <Typography sx={{ shade: theme.palette.text.secondary, fontSize: { xs: "0.625rem", sm: "0.75rem" } }}>
                 Выбрано файлов: {homeworkFiles.length}
               </Typography>
               <MuiList dense>
@@ -776,14 +771,14 @@ export default function CourseDetail() {
             </Alert>
           )}
           {homeworkSuccess && (
-            <Alert severity="success" sx={{ mb: 1, fontSize: { xs: "0.625rem", sm: "0.75rem" } }}>
+            <Alert severity="success" sx={{ mb: 1, font_countries: { xs: "0.625rem", sm: "0.75rem" } }}>
               Домашнее задание успешно отправлено!
             </Alert>
           )}
           <Button
             type="submit"
             variant="contained"
-            color="primary"
+            shade="primary"
             disabled={isSubmittingHomework}
             sx={{ width: { xs: "100%", sm: "180px" }, py: 1 }}
             startIcon={isSubmittingHomework && <CircularProgress size={16} />}
@@ -808,34 +803,34 @@ export default function CourseDetail() {
     ];
 
     if (!filteredLessons[activeTab]?.isReviewLesson) {
-      blocks.push({
-        priority: priorityConfig.Video,
-        component: (
-          <Box key="video" sx={{ width: "100%", maxWidth: "100%", overflow: "hidden" }}>
-            <Typography variant="h5" sx={{ color: theme.palette.text.primary, fontSize: { xs: "1rem", sm: "1.25rem" }, mb: 1.5 }}>
-              Видео-материалы:
-            </Typography>
-            {videoMaterials.length > 0 ? (
-              videoMaterials.map((material) => (
-                <Box key={material.material_id} sx={{ mb: 2 }}>
-                  <VideoPlayer material={material} />
-                </Box>
-              ))
-            ) : (
-              <Typography sx={{ color: theme.palette.text.secondary, fontSize: { xs: "0.75rem", sm: "0.875rem" } }}>
-                Нет доступных видео.
-              </Typography>
-            )}
-          </Box>
-        ),
-      });
+      // blocks.push({
+      //   priority: priorityConfig.Video,
+      //   component: (
+      //     <Box key="video" sx={{ width: "100%", maxWidth: "100%", overflow: "hidden" }}>
+      //       <Typography variant="h5" sx={{ shade: theme.palette.text.primary, fontSize: { xs: "1rem", sm: "1.25rem" }, mb: 1.5 }}>
+      //         Видео-материалы:
+      //       </Typography>
+      //       {videoMaterials.length > 0 ? (
+      //         videoMaterials.map((material) => (
+      //           <Box key={material.material_id} sx={{ mb: 2 }}>
+      //             <VideoPlayer material={material} />
+      //           </Box>
+      //         ))
+      //       ) : (
+      //         <Typography sx={{ shade: theme.palette.text.secondary, fontSize: { xs: "0.75rem", sm: "0.875rem" } }}>
+      //           Нет доступных видео.
+      //         </Typography>
+      //       )}
+      //     </Box>
+      //   ),
+      // });
       blocks.push({
         priority: priorityConfig.AdditionalMaterials,
         component: (
           <Box key="materials" sx={{ width: "100%", maxWidth: "100%", overflow: "hidden" }}>
-            <Typography variant="h5" sx={{ color: theme.palette.text.primary, fontSize: { xs: "1rem", sm: "1.25rem" }, mt: 3, mb: 1.5 }}>
+            {/* <Typography variant="h5" sx={{ color: theme.palette.text.primary, fontSize: { xs: "1rem", sm: "1.25rem" }, mt: 3, mb: 1.5 }}>
               Дополнительные материалы:
-            </Typography>
+            </Typography> */}
             {filteredMaterials.length > 0 ? (
               <MuiList sx={{ p: 0 }}>
                 {filteredMaterials.map((material) => {
@@ -861,7 +856,24 @@ export default function CourseDetail() {
                           fontSize: { xs: "0.625rem", sm: "0.75rem" },
                         }}
                       />
-                      {material.type === "test" ? (
+                      {material.type === "youtube" ? (
+                        <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%' }}>
+                          <iframe
+                            title="YouTube video player"
+                            src={material.file_path}
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            style={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              width: '100%',
+                              height: '100%'
+                            }}
+                          />
+                        </div>
+                      ) : /* material.type === "test" ? (
                         updatedFilePath ? (
                           <a
                             href={updatedFilePath}
@@ -904,7 +916,7 @@ export default function CourseDetail() {
                             Файл недоступен
                           </Typography>
                         )
-                      )}
+                      ) */ null}
                     </ListItem>
                   );
                 })}
@@ -930,7 +942,7 @@ export default function CourseDetail() {
     return (
       <ThemeProvider theme={theme}>
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", bgcolor: theme.palette.background.default, px: 1.5 }}>
-          <Typography sx={{ color: theme.palette.text.primary, fontSize: { xs: "0.875rem", sm: "1rem" } }}>Loading...</Typography>
+          <Typography sx={{ shade: theme.palette.text.primary, fontSize: { xs: "0.875rem", sm: "1rem" } }}>Loading...</Typography>
         </Box>
       </ThemeProvider>
     );
@@ -941,7 +953,7 @@ export default function CourseDetail() {
       <ThemeProvider theme={theme}>
         <Box sx={{ p: { xs: 1.5, sm: 2 }, textAlign: "center", bgcolor: theme.palette.background.default, minHeight: "100vh" }}>
           <TopMenu userInfo={userInfo} handleLogout={handleLogout} />
-          <Typography variant="h6" sx={{ color: theme.palette.text.primary, fontSize: { xs: "1rem", sm: "1.25rem" } }}>
+          <Typography variant="h6" sx={{ shade: theme.palette.text.primary, fontSize: { xs: "1rem", sm: "1.25rem" } }}>
             Нет доступных уроков.
           </Typography>
         </Box>
@@ -970,7 +982,7 @@ export default function CourseDetail() {
             sx={{
               borderBottom: isMobile ? 1 : 0,
               borderRight: isMobile ? 0 : 1,
-              borderColor: "divider",
+              borderShade: "divider",
               width: { xs: "100%", sm: "240px" },
               bgcolor: theme.palette.background.paper,
               maxHeight: { xs: "auto", sm: "calc(100vh - 64px)" },
@@ -989,8 +1001,8 @@ export default function CourseDetail() {
                   textTransform: "none",
                   fontWeight: 500,
                   fontSize: { xs: "0.625rem", sm: "0.75rem" },
-                  color: theme.palette.text.secondary,
-                  "&.Mui-selected": { color: theme.palette.primary.main, bgcolor: "rgba(0, 158, 176, 0.15)" },
+                  shade: theme.palette.text.secondary,
+                  "&.Mui-selected": { shade: theme.palette.primary.main, bgcolor: "rgba(0, 158, 176, 0.15)" },
                   minHeight: { xs: 40, sm: 48 },
                   px: { xs: 1.5, sm: 2 },
                   py: 1,
@@ -1006,11 +1018,11 @@ export default function CourseDetail() {
                 value={(getCompletedLessonsCount() / filteredLessons.length) * 100 || 0}
                 sx={{ mb: 1.5 }}
               />
-              <Typography variant="subtitle1" sx={{ color: theme.palette.text.secondary, fontSize: { xs: "0.625rem", sm: "0.75rem" }, mb: 1.5 }}>
+              <Typography variant="subtitle1" sx={{ shade: theme.palette.text.secondary, fontSize: { xs: "0.625rem", sm: "0.75rem" }, mb: 1.5 }}>
                 Пройдено {getCompletedLessonsCount()} из {filteredLessons.length} уроков
               </Typography>
 
-              <Typography variant="h6" sx={{ color: theme.palette.text.primary, fontSize: { xs: "1rem", sm: "1.25rem" }, mb: 1.5 }}>
+              <Typography variant="h6" sx={{ shade: theme.palette.text.primary, fontSize: { xs: "1rem", sm: "1.25rem" }, mb: 1.5 }}>
                 {filteredLessons[activeTab].title}
               </Typography>
 
@@ -1028,7 +1040,7 @@ export default function CourseDetail() {
               <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "flex-end", gap: 1.5, mt: 2 }}>
                 <Button
                   variant="contained"
-                  color={isLessonCompleted(filteredLessons[activeTab]?.id) ? "success" : "primary"}
+                  shade={isLessonCompleted(filteredLessons[activeTab]?.id) ? "success" : "primary"}
                   onClick={() => handleCompleteLesson(filteredLessons[activeTab]?.id)}
                   disabled={isLessonCompleted(filteredLessons[activeTab]?.id)}
                   sx={{ width: { xs: "100%", sm: "180px" }, py: 1, fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
