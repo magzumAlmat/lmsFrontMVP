@@ -166,21 +166,42 @@ export default function Homeworks() {
   };
 
   // Загрузка списка студентов
+  // const fetchUsers = async () => {
+  //   try {
+  //     const response = await axios.get(`${host}/api/getallusers`, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     console.log('Users fetched:', response.data);
+  //     if (!Array.isArray(response.data)) {
+  //       throw new Error("Ожидался массив пользователей");
+  //     }
+  //     setUsers(response.data);
+  //   } catch (error) {
+  //     console.error("Ошибка при загрузке пользователей:", error);
+  //     setError(error.response?.data?.message || "Не удалось загрузить список студентов");
+  //   }
+  // };
+
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(`${host}/api/users`, {
+      const response = await axios.get(`${host}/api/getallusers`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log('Users fetched:', response.data);
-      if (!Array.isArray(response.data)) {
-        throw new Error("Ожидался массив пользователей");
+      
+      // Проверяем, есть ли поле users и является ли оно массивом
+      if (!response.data.users || !Array.isArray(response.data.users)) {
+        console.error('Полученные данные:', response.data);
+        throw new Error("Ожидался массив пользователей в поле users");
       }
-      setUsers(response.data);
+      
+      setUsers(response.data.users); // Устанавливаем массив из response.data.users
     } catch (error) {
       console.error("Ошибка при загрузке пользователей:", error);
       setError(error.response?.data?.message || "Не удалось загрузить список студентов");
     }
   };
+
 
   // Загрузка домашних заданий
   const fetchHomeworks = async () => {

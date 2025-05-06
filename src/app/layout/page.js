@@ -182,7 +182,7 @@ export default function WelcomePage() {
               и технологиями. */}
               Приветственный текст
             </Typography>
-            <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%' }}>
+            {/* <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%' }}>
             <iframe
                   title="YouTube video player"
                   src="https://www.youtube.com/embed/l9VBAZ-LyVw"
@@ -197,7 +197,7 @@ export default function WelcomePage() {
                     height: '100%'
                   }}
                 />
-                </div>
+                </div> */}
           </Box>
         </Container>
       </Box>

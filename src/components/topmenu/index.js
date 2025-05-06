@@ -115,7 +115,7 @@ const TopMenu = ({ userInfo, handleLogout }) => {
         { text: t("topMenu.logout"), onClick: handleLogout },
       ],
       2: [
-        { text: t("topMenu.home"), href: "/layout" },
+        { text: 'Домашние задания', href: "/homework" },
         { text: t("topMenu.streams"), href: "/addstreams" },
         { text: t("topMenu.courses"), href: "/addcourse" },
         { text: t("topMenu.lessons"), href: "/addlessons" },
