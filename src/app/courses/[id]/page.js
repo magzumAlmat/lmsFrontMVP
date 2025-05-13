@@ -297,7 +297,7 @@ export default function CourseDetail() {
         editorInstance.current.destroy();
       }
     };
-  }, [token, activeTab, filteredLessons, reviewContent]);
+  }, [token, activeTab, filteredLessons]);
 
   const fetchLessons = async () => {
     try {
